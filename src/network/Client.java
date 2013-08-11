@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class Client {
-	
+	//test
 	public static final int SOCKET=1238;
 	private BufferedReader in;
 	private DataOutputStream out;
