@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 public class Client {
-	//test
+	
 	public static final int SOCKET=1238;
 	private BufferedReader in;
 	private DataOutputStream out;
@@ -22,10 +22,17 @@ public class Client {
 			out = new DataOutputStream(socket.getOutputStream());
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
+			if(ip.contains("107"))
+				sendMessage("hi");
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void sendMessage(String s){
+		
+		out.writeChars(s);
 	}
 	
 	
