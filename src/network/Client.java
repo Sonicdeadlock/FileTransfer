@@ -63,12 +63,12 @@ public class Client {
 		buffer[0]=1;
 		
 		if(stringInBytes.length<PACKET_LENGTH){
-			System.arraycopy(buffer, 0, stringInBytes, 1, stringInBytes.length);
+			System.arraycopy(stringInBytes, 0, buffer, 1, stringInBytes.length);
 			sendPacket(buffer);
 		}
 		else{
 			for(int i=1;i<stringInBytes.length;i+=PACKET_LENGTH-1){
-				System.arraycopy(buffer, i-1, stringInBytes, 1, PACKET_LENGTH-1);
+				System.arraycopy(stringInBytes, i-1, buffer, 1, PACKET_LENGTH-1);
 				sendPacket(buffer);
 			}
 		}
