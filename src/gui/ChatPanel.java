@@ -74,6 +74,7 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         client.sendMessage(jTextField1.getText());
+        jTextPane1.setText(jTextPane1.getText()+jTextField1.getText());
         jTextField1.setText("");
     }                    
     

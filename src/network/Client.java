@@ -39,13 +39,16 @@ public class Client {
 	private CommunicationHandler communicationHandler;
 	private String username="";
 	private List _listeners = new ArrayList();
+	private int timeout    = 10000;
+	private int maxTimeout = 25000;
+
 	
 	public void init(String ip){
 		try {
 			socket= new Socket(ip,SOCKET);
 			in = socket.getInputStream();
 			out = new DataOutputStream(socket.getOutputStream());
-			
+			socket.setSoTimeout(timeout);
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
 			sendMessage("hi test");
@@ -63,7 +66,7 @@ public class Client {
 			serverSocket.close();
 			in = socket.getInputStream();
 			out = new DataOutputStream(socket.getOutputStream());
-			
+			socket.setSoTimeout(timeout);
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
 		} catch (IOException e) {
@@ -133,9 +136,10 @@ public class Client {
 	
 	
 	class CommunicationHandler extends Thread{
-		
+		volatile long lastReadTime;
 		public void run(){
 			byte[] buffer = new byte[PACKET_LENGTH];  
+	   	    lastReadTime = System.currentTimeMillis();
 			while(true){
 				try {
 					in.read(buffer);
@@ -144,7 +148,7 @@ public class Client {
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
 						fireRecivedEvent(temp);
 					}
-					else if(buffer[0]==-1)
+					if(isConnectionAlive())
 						break;
 					
 				} catch (Exception e) {
@@ -152,6 +156,10 @@ public class Client {
 					e.printStackTrace();
 				}
 			}
+		}
+		
+		public boolean isConnectionAlive() {
+		    return System.currentTimeMillis() - lastReadTime < maxTimeout;
 		}
 		
 	}
