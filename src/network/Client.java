@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Client {
@@ -41,8 +42,36 @@ public class Client {
 		}
 	}
 	
+	public void init(){
+		try {
+			ServerSocket serverSocket = new ServerSocket(SOCKET);
+			socket = serverSocket.accept();
+			in = socket.getInputStream();
+			out = new DataOutputStream(socket.getOutputStream());
+			
+			communicationHandler = new CommunicationHandler(); 
+			communicationHandler.start();
+		} catch (IOException e) {
+			System.out.println("Could not connect on port :"+SOCKET);
+			e.printStackTrace();
+		}
+	}
+	
 	public void sendMessage(String s){
-		sendPacket(s.getBytes());
+		byte[] stringInBytes=s.getBytes();
+		byte[] buffer= new byte[PACKET_LENGTH];
+		buffer[0]=1;
+		
+		if(stringInBytes.length<PACKET_LENGTH){
+			System.arraycopy(buffer, 0, stringInBytes, 1, stringInBytes.length);
+			sendPacket(buffer);
+		}
+		else{
+			for(int i=1;i<stringInBytes.length;i+=PACKET_LENGTH-1){
+				System.arraycopy(buffer, i-1, stringInBytes, 1, PACKET_LENGTH-1);
+				sendPacket(buffer);
+			}
+		}
 	}
 	
 	public void sendPacket(byte[] packet){
@@ -63,9 +92,13 @@ public class Client {
 			while(true){
 				try {
 					in.read(buffer);
+					System.out.println("got a packet");
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
+						System.out.println(temp);
 					}
+					else if(buffer[0]==-1)
+						break;
 					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
