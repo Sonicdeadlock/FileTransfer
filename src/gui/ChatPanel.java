@@ -30,11 +30,11 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
 
-        jScrollPane1.setViewportView(jTextPane1);
+        jScrollPane1.setViewportView(jTextArea1);
 
         jTextField1.setText("");
 
@@ -74,13 +74,13 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         client.sendMessage(jTextField1.getText());
-        jTextPane1.setText(jTextPane1.getText()+jTextField1.getText());
+        jTextArea1.append("\n"+jTextField1.getText());
         jTextField1.setText("");
     }                    
     
     public void handleMessageRecivedEvent(EventObject e) {
 		String s =(String)e.getSource();
-		jTextPane1.setText(jTextPane1.getText()+s);
+		jTextArea1.append("\n"+s);
 		
 	}
 
@@ -88,7 +88,7 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
     private javax.swing.JButton jButton1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextPane jTextPane1;
+    private javax.swing.JTextArea jTextArea1;
     // End of variables declaration                   
 }
 

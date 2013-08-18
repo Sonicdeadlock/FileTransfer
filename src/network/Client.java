@@ -48,7 +48,6 @@ public class Client {
 			socket= new Socket(ip,SOCKET);
 			in = socket.getInputStream();
 			out = new DataOutputStream(socket.getOutputStream());
-			socket.setSoTimeout(timeout);
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
 			sendMessage("hi test");
@@ -66,7 +65,6 @@ public class Client {
 			serverSocket.close();
 			in = socket.getInputStream();
 			out = new DataOutputStream(socket.getOutputStream());
-			socket.setSoTimeout(timeout);
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
 		} catch (IOException e) {
@@ -148,8 +146,8 @@ public class Client {
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
 						fireRecivedEvent(temp);
 					}
-					if(isConnectionAlive())
-						break;
+				//	if(isConnectionAlive())
+				//		break;
 					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
