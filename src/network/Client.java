@@ -10,6 +10,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import events.EventListener;
+import events.MessageRecivedEvent;
 
 public class Client {
 	
@@ -19,12 +27,18 @@ public class Client {
 	 * 2= file num packets
 	 * 3 = packet
 	 */
-	
+	private static final String PATTERN = 
+	        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 	public static final int SOCKET=1238,PACKET_LENGTH=1000;
 	private InputStream in;
 	private volatile DataOutputStream out;
 	private volatile Socket socket;
 	private CommunicationHandler communicationHandler;
+	private String username="";
+	private List _listeners = new ArrayList();
 	
 	public void init(String ip){
 		try {
@@ -46,6 +60,7 @@ public class Client {
 		try {
 			ServerSocket serverSocket = new ServerSocket(SOCKET);
 			socket = serverSocket.accept();
+			serverSocket.close();
 			in = socket.getInputStream();
 			out = new DataOutputStream(socket.getOutputStream());
 			
@@ -58,6 +73,7 @@ public class Client {
 	}
 	
 	public void sendMessage(String s){
+		s=username+": "+s;
 		byte[] stringInBytes=s.getBytes();
 		byte[] buffer= new byte[PACKET_LENGTH];
 		buffer[0]=1;
@@ -83,6 +99,37 @@ public class Client {
 		}
 	}
 	
+	public void setUsername(String s){
+		username=s;
+	}
+	
+	public String getUsername(){
+		return username;
+	}
+	
+	
+
+	public static boolean validateIP(final String ip){          
+
+	      Pattern pattern = Pattern.compile(PATTERN);
+	      Matcher matcher = pattern.matcher(ip);
+	      return matcher.matches();             
+	}
+	
+	private synchronized void fireRecivedEvent(String s){
+		MessageRecivedEvent event = new MessageRecivedEvent(s);
+		Iterator i = _listeners.iterator();
+		while(i.hasNext())
+			((EventListener) i.next()).handleMessageRecivedEvent(event);
+	}
+	
+	public synchronized void addEventListener(EventListener e){
+		_listeners.add(e);
+	}
+	public synchronized void removeEventListener(EventListener e){
+		_listeners.remove(e);
+	}
+	
 	
 	
 	class CommunicationHandler extends Thread{
@@ -95,7 +142,7 @@ public class Client {
 					System.out.println("got a packet");
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
-						System.out.println(temp);
+						fireRecivedEvent(temp);
 					}
 					else if(buffer[0]==-1)
 						break;

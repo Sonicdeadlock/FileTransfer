@@ -10,8 +10,17 @@ public class Tester {
 		Scanner s = new Scanner(System.in);
 		System.out.println("what is your username?");
 		String username = s.nextLine();
+		
 		Client c = new Client();
-		c.init("192.168.1.107");
+		System.out.println("would you like to enter an IP(y/n). The other option is to wait for someone to connect");
+		String response = s.next();
+		if(response.equalsIgnoreCase("y")|| response.equalsIgnoreCase("yes")){
+			System.out.println("Please enter the ip");
+			response = s.next();
+			c.init(response);
+		}
+		else
+			c.init();
 		while(true){
 			c.sendMessage(username+": "+s.nextLine());
 		
