@@ -1,5 +1,8 @@
 package gui;
 
+import java.awt.Component;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.EventObject;
 
 import javax.swing.JFrame;
@@ -120,4 +123,18 @@ public class Gui extends JFrame  {
     // End of variables declaration                   
 	
 
+    private class closeHandler extends WindowAdapter{
+    	
+    	public void windowClosing(WindowEvent e) { 
+    			for(Component c :jTabbedPane1.getComponents()){
+    				if(c instanceof ChatPanel){
+    					ChatPanel chat = (ChatPanel)c;
+    					chat.close();
+    					
+    				}
+    			}
+    			System.exit(0);
+    		} 
+    }
+    
 }

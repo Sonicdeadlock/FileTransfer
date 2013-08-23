@@ -1,10 +1,13 @@
 package gui;
 
+import java.awt.Label;
 import java.util.EventObject;
 
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 import events.EventListener;
+import events.UsernameRecivedEvent;
 import network.Client;
 
 public class ChatPanel extends javax.swing.JPanel implements EventListener{
@@ -17,7 +20,8 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
     public ChatPanel(Client c) {
         initComponents();
         client =c;
-        client.addEventListener(this);
+        client.addMessageEventListener(this);
+        client.addUsernameEventListener(this);
     }
 
     /**
@@ -40,6 +44,11 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
 
         jButton1.setText("Send");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
@@ -74,14 +83,13 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
         client.sendMessage(jTextField1.getText());
-        jTextArea1.append("\n"+jTextField1.getText());
+        jTextArea1.append("\nme: "+jTextField1.getText());
         jTextField1.setText("");
     }                    
     
     public void handleMessageRecivedEvent(EventObject e) {
 		String s =(String)e.getSource();
 		jTextArea1.append("\n"+s);
-		
 	}
 
     // Variables declaration - do not modify                     
@@ -90,5 +98,20 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextArea jTextArea1;
     // End of variables declaration                   
+
+	@Override
+	public void handleUsernameRecivedEvent(UsernameRecivedEvent event) {
+		String username = (String)event.getSource();
+		JTabbedPane jTab = (JTabbedPane) this.getParent();
+		int count =jTab.getTabCount();
+		jTab.setTabComponentAt(count-1, new Label(username));
+		System.out.println("Im TRYING TO CHANGE THE TITLE BUT BLARHGE !!!;"+username);
+		
+		
+	}
+	
+	public void close(){
+		client.close();
+	}
 }
 

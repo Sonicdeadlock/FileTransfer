@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 import events.EventListener;
 import events.MessageRecivedEvent;
+import events.UsernameRecivedEvent;
 
 public class Client {
 	
@@ -25,7 +26,13 @@ public class Client {
 	 * Packets
 	 * 1= string
 	 * 2= file num packets
-	 * 3 = packet
+	 * 3 = file request
+	 * 4 = file yes
+	 * 5 = file no
+	 * 6 = username
+	 * 7 = reply username
+	 * 8 = connected
+	 * 9 = disconnect
 	 */
 	private static final String PATTERN = 
 	        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
@@ -38,7 +45,7 @@ public class Client {
 	private volatile Socket socket;
 	private CommunicationHandler communicationHandler;
 	private String username="";
-	private List _listeners = new ArrayList();
+	private List _messageListeners = new ArrayList(),_usernameListeners=new ArrayList();
 	private int timeout    = 10000;
 	private int maxTimeout = 25000;
 
@@ -50,12 +57,26 @@ public class Client {
 			out = new DataOutputStream(socket.getOutputStream());
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
-			sendMessage("hi test");
 			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void init(Socket s){
+		socket=s;
+		try {
+			in = socket.getInputStream();
+			out = new DataOutputStream(socket.getOutputStream());
+			communicationHandler = new CommunicationHandler(); 
+			communicationHandler.start();
+			sendConnected();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void init(){
@@ -67,6 +88,7 @@ public class Client {
 			out = new DataOutputStream(socket.getOutputStream());
 			communicationHandler = new CommunicationHandler(); 
 			communicationHandler.start();
+			sendConnected();
 		} catch (IOException e) {
 			System.out.println("Could not connect on port :"+SOCKET);
 			e.printStackTrace();
@@ -108,6 +130,19 @@ public class Client {
 		return username;
 	}
 	
+	private void sendUsername(boolean reply){
+		byte[] stringInBytes=username.getBytes();
+		byte[] buffer= new byte[PACKET_LENGTH];
+		if(reply)
+			buffer[0]=7;
+		else
+			buffer[0]=6;
+		
+		
+			System.arraycopy(stringInBytes, 0, buffer, 1, stringInBytes.length);
+			sendPacket(buffer);
+		
+	}
 	
 
 	public static boolean validateIP(final String ip){          
@@ -117,37 +152,99 @@ public class Client {
 	      return matcher.matches();             
 	}
 	
-	private synchronized void fireRecivedEvent(String s){
+	private synchronized void fireMessageRecivedEvent(String s){
 		MessageRecivedEvent event = new MessageRecivedEvent(s);
-		Iterator i = _listeners.iterator();
+		Iterator i = _messageListeners.iterator();
 		while(i.hasNext())
 			((EventListener) i.next()).handleMessageRecivedEvent(event);
 	}
 	
-	public synchronized void addEventListener(EventListener e){
-		_listeners.add(e);
-	}
-	public synchronized void removeEventListener(EventListener e){
-		_listeners.remove(e);
+	private synchronized void fireUsernameEvent(String s){
+		UsernameRecivedEvent event = new UsernameRecivedEvent(s);
+		Iterator i = _messageListeners.iterator();
+		while(i.hasNext())
+			((EventListener) i.next()).handleUsernameRecivedEvent(event);
 	}
 	
+	private void sendConnected(){
+		byte[] buffer = new byte[PACKET_LENGTH];
+		buffer[0]=8;
+		sendPacket(buffer);
+	}
+	
+	public synchronized void addMessageEventListener(EventListener e){
+		_messageListeners.add(e);
+	}
+	public synchronized void removeMessageEventListener(EventListener e){
+		_messageListeners.remove(e);
+	}
+	public synchronized void addUsernameEventListener(EventListener e){
+		_usernameListeners.add(e);
+	}
+	public synchronized void removeUsernameEventListener(EventListener e){
+		_usernameListeners.remove(e);
+	}
+	
+	public void close(){
+		byte[] buffer = new byte[PACKET_LENGTH];
+		buffer[0]= 9;
+		sendPacket(buffer);
+		communicationHandler.connected=false;
+		try {
+			socket.close();
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+			System.out.println("I DODT GET CLOS-ED");
+		}
+	}
 	
 	
 	class CommunicationHandler extends Thread{
-		volatile long lastReadTime;
+		public boolean connected=true;
 		public void run(){
 			byte[] buffer = new byte[PACKET_LENGTH];  
-	   	    lastReadTime = System.currentTimeMillis();
-			while(true){
+			while(connected){
 				try {
 					in.read(buffer);
 					System.out.println("got a packet");
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
-						fireRecivedEvent(temp);
+						fireMessageRecivedEvent(temp);
+					
 					}
-				//	if(isConnectionAlive())
-				//		break;
+					else if(buffer[0]==6){
+						System.out.println("trying to set the username");
+						String temp = new String(buffer,1,PACKET_LENGTH-1);
+						fireUsernameEvent(temp);
+						sendUsername(true);
+					}else if(buffer[0]==7){
+						String temp = new String(buffer,1,PACKET_LENGTH-1);
+						fireUsernameEvent(temp);
+					}
+					else if(buffer[0]==8){
+						System.out.println("other got connected trying to send the username");
+						sendUsername(false);
+					}
+					else if(buffer[0]==9){
+						connected=false;
+						socket.close();
+					}
+					else if(buffer[0]==0){
+						fireMessageRecivedEvent("<Message Lost>");
+					}
+					
+					else{
+						System.out.println("Got an error with a packet. Dont know what the ID is\nThe unknown ID is:"+buffer[0]);
+						System.out.println("bytes:[");
+						for(int i=0; i<buffer.length;i++)
+							System.out.print(buffer[i]+",");
+						System.out.print("]\n");
+						System.out.println("Text"+new String(buffer,1,PACKET_LENGTH-1));
+					}
+							
+						
+					
 					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -156,9 +253,6 @@ public class Client {
 			}
 		}
 		
-		public boolean isConnectionAlive() {
-		    return System.currentTimeMillis() - lastReadTime < maxTimeout;
-		}
 		
 	}
 	
