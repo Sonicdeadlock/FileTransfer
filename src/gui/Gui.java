@@ -120,6 +120,7 @@ public class Gui extends JFrame  {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem setDefaultUsername;
     // End of variables declaration                   
 	
 

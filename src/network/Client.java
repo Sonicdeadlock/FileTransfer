@@ -220,7 +220,7 @@ public class Client {
 						sendUsername(true);
 					}else if(buffer[0]==7){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
-						fireUsernameEvent(temp);
+						fireUsernameEvent(temp.trim());
 					}
 					else if(buffer[0]==8){
 						System.out.println("other got connected trying to send the username");
