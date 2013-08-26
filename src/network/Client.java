@@ -210,7 +210,7 @@ public class Client {
 					System.out.println("got a packet");
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
-						fireMessageRecivedEvent(temp);
+						fireMessageRecivedEvent(temp.trim());
 					
 					}
 					else if(buffer[0]==6){

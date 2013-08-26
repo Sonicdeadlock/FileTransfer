@@ -7,6 +7,7 @@ import java.util.EventObject;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.text.DefaultCaret;
 
 import events.EventListener;
 import network.Client;
@@ -95,6 +96,7 @@ public class Gui extends JFrame  {
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
                 .addGap(0, 24, Short.MAX_VALUE))
         );
+    
         pack();
     }// </editor-fold>                        
 

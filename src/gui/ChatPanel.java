@@ -1,10 +1,12 @@
 package gui;
 
+import java.awt.Dimension;
 import java.awt.Label;
 import java.util.EventObject;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.text.DefaultCaret;
 
 import events.EventListener;
 import events.UsernameRecivedEvent;
@@ -79,6 +81,9 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
                     .addComponent(jButton1))
                 .addGap(0, 11, Short.MAX_VALUE))
         );
+        DefaultCaret caret = (DefaultCaret) jTextArea1.getCaret();
+        caret.setUpdatePolicy(WHEN_IN_FOCUSED_WINDOW);
+        jTextArea1.setLineWrap(true);
     }// </editor-fold>                        
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
