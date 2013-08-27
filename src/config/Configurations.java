@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class Configurations {
 	private static boolean loaded=false;
-	private static boolean updated=false;
 	private static Map<String,String> configs = new HashMap<String,String>();
 	private static String[] defaults={"Username:Default User1"};
 	
@@ -55,9 +54,32 @@ public class Configurations {
 	}
 	
 	public static String getAttribute(String attribute){
+		if(!loaded)
+			load();
 		if(!configs.containsKey(attribute))
 			return null;
 		return configs.get(attribute);
+	}
+	
+	public static void setAttribute(String attribute, String newConfigeration){
+			configs.put(attribute, newConfigeration);
+			saveFile();
+		
+	}
+	
+	private static void saveFile(){
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
+			for(String s : configs.keySet())
+				bw.write(s+":"+configs.get(s));
+			
+			bw.flush();
+			bw.close();
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

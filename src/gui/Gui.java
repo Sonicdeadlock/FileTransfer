@@ -69,7 +69,13 @@ public class Gui extends JFrame  {
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Chat");
-
+        setDefaultUsername.setText("Set Default UserName");
+        setDefaultUsername.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	setDefaultUsernameActionPerformed(evt);
+            }
+        });
+        
         jMenuItem1.setText("Add Chat");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -77,6 +83,7 @@ public class Gui extends JFrame  {
             }
         });
         jMenu3.add(jMenuItem1);
+        jMenu3.add(setDefaultUsername);
 
         jMenuBar1.add(jMenu3);
 
@@ -111,6 +118,10 @@ public class Gui extends JFrame  {
     
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
         new ChatInfo(this).setVisible(true);
+    }
+    
+    private void setDefaultUsernameActionPerformed(java.awt.event.ActionEvent evt){
+    	
     }
 
 
