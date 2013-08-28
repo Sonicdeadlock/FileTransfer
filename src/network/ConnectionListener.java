@@ -3,6 +3,7 @@ package network;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import config.Configurations;
 import gui.Gui;
 
 public class ConnectionListener extends Thread {
@@ -27,6 +28,7 @@ public class ConnectionListener extends Thread {
 				ServerSocket serverSocket = new ServerSocket(Client.SOCKET);
 				Client c = new Client();
 				c.init(serverSocket.accept());
+				c.setUsername(Configurations.getAttribute("Username"));
 				g.addChat(c);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

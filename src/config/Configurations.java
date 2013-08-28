@@ -69,6 +69,7 @@ public class Configurations {
 	
 	private static void saveFile(){
 		try {
+			File f = new File("configs");
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			for(String s : configs.keySet())
 				bw.write(s+":"+configs.get(s));

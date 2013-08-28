@@ -7,9 +7,11 @@ import java.util.EventObject;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.text.DefaultCaret;
 
 import events.EventListener;
+import gui.inputs.DefaultUsernameInput;
 import network.Client;
 
 @SuppressWarnings("serial")
@@ -37,6 +39,7 @@ public class Gui extends JFrame  {
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        setDefaultUsername = new JMenuItem();
         
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -121,7 +124,7 @@ public class Gui extends JFrame  {
     }
     
     private void setDefaultUsernameActionPerformed(java.awt.event.ActionEvent evt){
-    	
+    	new DefaultUsernameInput().setVisible(true);
     }
 
 
