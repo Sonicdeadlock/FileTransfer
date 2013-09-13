@@ -8,6 +8,8 @@ import java.util.EventObject;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
 import logging.Logger;
@@ -25,6 +27,7 @@ public class Gui extends JFrame  {
 	public Gui(Logger logger) {
         initComponents();
         _logger = logger;
+        
     }
 
     /**
