@@ -13,6 +13,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
 
 import logging.Logger;
+import logging.Message;
 import events.EventListener;
 import gui.inputs.DefaultUsernameInput;
 import network.Client;
@@ -27,6 +28,12 @@ public class Gui extends JFrame  {
 	public Gui(Logger logger) {
         initComponents();
         _logger = logger;
+        addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent arg0) {
+				handleClose(arg0);
+			}
+		});
         
     }
 
@@ -146,9 +153,10 @@ public class Gui extends JFrame  {
     // End of variables declaration                   
 	
 
-    private class closeHandler extends WindowAdapter{
+    
     	
-    	public void windowClosing(WindowEvent e) { 
+    	public void handleClose(WindowEvent e) { 
+    		_logger.log(new Message("Closeing window",Message.Type.Report));
     			for(Component c :jTabbedPane1.getComponents()){
     				if(c instanceof ChatPanel){
     					ChatPanel chat = (ChatPanel)c;
@@ -158,6 +166,6 @@ public class Gui extends JFrame  {
     			}
     			System.exit(0);
     		} 
-    }
+    
     
 }

@@ -33,6 +33,7 @@ public class ConnectionListener extends Thread {
 				c.init(serverSocket.accept());
 				c.setUsername(Configurations.getAttribute("Username"));
 				g.addChat(c);
+				serverSocket.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				System.out.print("?");
