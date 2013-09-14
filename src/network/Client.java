@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import logging.Logger;
 import events.EventListener;
 import events.MessageRecivedEvent;
 import events.UsernameRecivedEvent;
@@ -48,7 +49,12 @@ public class Client {
 	private List _messageListeners = new ArrayList(),_usernameListeners=new ArrayList();
 	private int timeout    = 10000;
 	private int maxTimeout = 25000;
+	private Logger _logger;
 
+	
+	public Client(Logger logger){
+		_logger = logger;
+	}
 	
 	public void init(String ip){
 		try {
@@ -248,7 +254,7 @@ public class Client {
 					
 				} catch (Exception e) {
 					
-					e.printStackTrace();
+					System.out.println("Disconnected :P");
 					return;
 				}
 			}
