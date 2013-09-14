@@ -7,7 +7,7 @@ public class Logger {
     private ArrayList<Message> messages= new ArrayList<Message>();
     
     public void log(Message message){
-    	
+    	System.out.println(message.getMessage());
     }
     
     private void writeMessages(){

@@ -4,17 +4,20 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
+import logging.Logger;
 import network.Client;
 
 public class ChatInfo extends javax.swing.JFrame {
 
-	Gui gui;
+	private Gui gui;
+	private Logger _logger;
     /**
      * Creates new form ChatInfo
      */
-    public ChatInfo(Gui g) {
+    public ChatInfo(Gui g,Logger logger) {
         initComponents();
         gui =g;
+        _logger=logger;
     }
 
     /**
@@ -138,7 +141,7 @@ public class ChatInfo extends javax.swing.JFrame {
      		jTextField2.setBackground(Color.green);
     	 
     	if(canInit){
-    		Client c = new Client();
+    		Client c = new Client(_logger);
     		c.setUsername(jTextField1.getText());
     		if(jCheckBox1.isSelected())
     			c.init(jTextField2.getText());

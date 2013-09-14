@@ -10,6 +10,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.text.DefaultCaret;
 
+import logging.Logger;
 import events.EventListener;
 import gui.inputs.DefaultUsernameInput;
 import network.Client;
@@ -20,8 +21,10 @@ public class Gui extends JFrame  {
 	 * 
 	 */
 	private static final long serialVersionUID = -8652766380073376172L;
-	public Gui() {
+	private Logger _logger;
+	public Gui(Logger logger) {
         initComponents();
+        _logger = logger;
     }
 
     /**
@@ -120,7 +123,7 @@ public class Gui extends JFrame  {
     }
     
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
-        new ChatInfo(this).setVisible(true);
+        new ChatInfo(this,_logger).setVisible(true);
     }
     
     private void setDefaultUsernameActionPerformed(java.awt.event.ActionEvent evt){
