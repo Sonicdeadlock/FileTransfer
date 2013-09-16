@@ -13,7 +13,7 @@ public class Test {
 		g.setVisible(true);
 		Client c =new Client(logger);
 		g.addChat(c);
-		c.init("192.168.1.107");
+		c.init("192.168.1.133");
 		
 	}
 

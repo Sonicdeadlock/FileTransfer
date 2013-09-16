@@ -32,7 +32,7 @@ public class Message {
 			text+="   "+message+"\n";
 		if(excpetion!=null)
 			text+=excpetion.getMessage();
-		return message;
+		return text;
 	}
 	
 	

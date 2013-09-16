@@ -26,8 +26,9 @@ public class Gui extends JFrame  {
 	private static final long serialVersionUID = -8652766380073376172L;
 	private Logger _logger;
 	public Gui(Logger logger) {
+		_logger = logger;
         initComponents();
-        _logger = logger;
+        
         addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent arg0) {
@@ -121,6 +122,7 @@ public class Gui extends JFrame  {
         );
     
         pack();
+        _logger.log(new Message("Opened window",Message.Type.Report));
     }// </editor-fold>                        
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {                                      
@@ -128,7 +130,7 @@ public class Gui extends JFrame  {
     }                                     
 
     public void addChat(Client c){
-    	ChatPanel chatPanel = new ChatPanel(c);
+    	ChatPanel chatPanel = new ChatPanel(c,this);
     	jTabbedPane1.add(chatPanel, jTabbedPane1.getTabCount());
     }
     
@@ -164,8 +166,12 @@ public class Gui extends JFrame  {
     					
     				}
     			}
+    			_logger.writeMessages();
     			System.exit(0);
-    		} 
-    
+    		}
+    	
+    	public void removeChat(ChatPanel c){
+    	
+    	}
     
 }

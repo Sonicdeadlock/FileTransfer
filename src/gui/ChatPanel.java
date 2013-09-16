@@ -8,22 +8,24 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.text.DefaultCaret;
 
+import events.ClosingListener;
 import events.EventListener;
 import events.UsernameRecivedEvent;
 import network.Client;
 
-public class ChatPanel extends javax.swing.JPanel implements EventListener{
+public class ChatPanel extends javax.swing.JPanel implements EventListener, ClosingListener{
 
-	Client client;
-	
+	private Client client;
+	private Gui gui;
     /**
      * Creates new form ChatPanel
      */
-    public ChatPanel(Client c) {
+    public ChatPanel(Client c, Gui g) {
         initComponents();
         client =c;
         client.addMessageEventListener(this);
         client.addUsernameEventListener(this);
+        gui=g;
     }
 
     /**
@@ -117,6 +119,13 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener{
 	
 	public void close(){
 		client.close();
+	}
+
+	@Override
+	public void handleClose(EventObject arg0) {
+		gui.removeChat(this);
+		
+		
 	}
 }
 
