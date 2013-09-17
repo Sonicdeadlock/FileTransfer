@@ -18,7 +18,7 @@ public class Logger {
     	try{
     		BufferedWriter bw = new BufferedWriter(new FileWriter(getLatestFileName(0)));
     		for(Message m : messages)
-    			bw.write(m.getMessage()+"\n");
+    			bw.write(m.getMessage()+"\r\n");
     		bw.flush();
     		bw.close();
     	}
