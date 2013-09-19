@@ -12,13 +12,14 @@ import java.util.Map;
 public class Configurations {
 	private static boolean loaded=false;
 	private static Map<String,String> configs = new HashMap<String,String>();
-	private static String[] defaults={"Username:Default User1"};
+	private static String[] defaults={"Username:Default User1","Should Log:True"};
 	
 	private static void load(){
 		try{
-			File f = new File("configs");
-			if(!f.exists())
+			File f = new File("configs.txt");
+			if(!f.exists()){
 				initFile(f);
+				}
 			
 			BufferedReader br = new BufferedReader(new FileReader(f));
 			String line="";
@@ -28,9 +29,10 @@ public class Configurations {
 					configs.put(temp[0],null);
 				else if(temp.length>1)
 					configs.put(temp[0], temp[1]);
-				loaded=true;
-				br.close();
+				
 			}
+			loaded=true;
+			br.close();
 			
 		}
 		catch(Exception ex){
@@ -42,7 +44,7 @@ public class Configurations {
 		try {
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			for(String s : defaults)
-				bw.write(s);
+				bw.write(s+"\r\n");
 			bw.flush();
 			bw.close();
 			

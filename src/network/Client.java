@@ -17,6 +17,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import logging.Logger;
+import logging.Message;
 import events.EventListener;
 import events.MessageRecivedEvent;
 import events.UsernameRecivedEvent;
@@ -195,8 +196,10 @@ public class Client {
 		byte[] buffer = new byte[PACKET_LENGTH];
 		buffer[0]= 9;
 		sendPacket(buffer);
+		_logger.log(new Message("said good-bye", Message.Type.Report));
 		communicationHandler.connected=false;
 		try {
+			
 			socket.close();
 		} catch (IOException e) {
 			
@@ -213,7 +216,7 @@ public class Client {
 			while(connected){
 				try {
 					in.read(buffer);
-					System.out.println("got a packet");
+					System.out.println("got a packet "+buffer[0]);
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
 						fireMessageRecivedEvent(temp.trim());
