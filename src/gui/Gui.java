@@ -32,7 +32,7 @@ public class Gui extends JFrame  {
 	public Gui(Logger logger) {
 		_logger = logger;
 		shouldLog=Boolean.parseBoolean( Configurations.getAttribute("Should Log"));
-		_logger.log(new Message(Configurations.getAttribute("Should Log"),Message.Type.Report));
+		_logger.log(new Message("Logging "+(shouldLog ? "Enabled" : "Disabled"),Message.Type.Report));
         initComponents();
         
         addWindowListener(new WindowAdapter() {
@@ -54,6 +54,7 @@ public class Gui extends JFrame  {
         jMenuItem1 = new javax.swing.JMenuItem();
         setDefaultUsername = new JMenuItem();
         shouldLogMenuItem = new JCheckBoxMenuItem();
+        sendFile = new JMenuItem();
         
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -82,7 +83,7 @@ public class Gui extends JFrame  {
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
         
-        shouldLogMenuItem.setText("Disable Logging");
+        shouldLogMenuItem.setText("Logging");
         shouldLogMenuItem.setSelected(shouldLog);
         shouldLogMenuItem.addActionListener(new java.awt.event.ActionListener(){
         	public void actionPerformed(java.awt.event.ActionEvent evt){
@@ -108,8 +109,16 @@ public class Gui extends JFrame  {
                 jMenuItem1ActionPerformed(evt);
             }
         });
+        
         jMenu3.add(jMenuItem1);
         jMenu3.add(setDefaultUsername);
+        
+        sendFile.setName("Send File");
+        sendFile.addActionListener(new java.awt.event.ActionListener(){
+        	public void actionPerformed(java.awt.event.ActionEvent evt){
+        		sendFileActionPerformed(evt);
+        	}
+        });
 
         jMenuBar1.add(jMenu3);
 
@@ -154,9 +163,12 @@ public class Gui extends JFrame  {
     public void shouldLogMenuItemActionPerformed(java.awt.event.ActionEvent evt){
     	shouldLog = !shouldLog;
     	Configurations.setAttribute("Should Log", shouldLog ? "True" : "False");
+    	_logger.log(new Message((shouldLog ? "Enabled" : "Disabled")+" Logging",Message.Type.Report));
     }
 
-
+    public void sendFileActionPerformed(java.awt.event.ActionEvent evt){
+    	
+    }
   
     // Variables declaration - do not modify        
     private javax.swing.JTabbedPane jTabbedPane1;

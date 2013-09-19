@@ -16,7 +16,7 @@ public class Configurations {
 	
 	private static void load(){
 		try{
-			File f = new File("configs.txt");
+			File f = new File("configs");
 			if(!f.exists()){
 				initFile(f);
 				}
@@ -74,7 +74,7 @@ public class Configurations {
 			File f = new File("configs");
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			for(String s : configs.keySet())
-				bw.write(s+":"+configs.get(s));
+				bw.write(s+":"+configs.get(s)+"\r\n");
 			
 			bw.flush();
 			bw.close();
