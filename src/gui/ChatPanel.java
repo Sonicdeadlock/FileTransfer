@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Dimension;
 import java.awt.Label;
+import java.io.File;
 import java.util.EventObject;
 
 import javax.swing.JPanel;
@@ -126,6 +127,10 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener, Clos
 		gui.removeChat(this);
 		
 		
+	}
+	
+	public void sendFile(File f){
+		client.sendFile(f);
 	}
 }
 

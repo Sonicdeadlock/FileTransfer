@@ -6,11 +6,7 @@ import java.io.IOException;
 
 public class FileBuffer {
 	
-	/*
-	 * IO FIRST BYTE RULES PACKET STANDERS
-	 * 1=file name
-	 * 2=file contents
-	 */
+	
 	private DataBuffer _db;
 	
 	public FileBuffer(DataBuffer db){

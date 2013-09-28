@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import java.util.EventObject;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -112,14 +113,15 @@ public class Gui extends JFrame  {
         
         jMenu3.add(jMenuItem1);
         jMenu3.add(setDefaultUsername);
-        
-        sendFile.setName("Send File");
+        jMenu1.add(sendFile);
+        sendFile.setText("Send File");
         sendFile.addActionListener(new java.awt.event.ActionListener(){
         	public void actionPerformed(java.awt.event.ActionEvent evt){
         		sendFileActionPerformed(evt);
         	}
         });
-
+        
+        
         jMenuBar1.add(jMenu3);
 
         setJMenuBar(jMenuBar1);
@@ -165,9 +167,22 @@ public class Gui extends JFrame  {
     	Configurations.setAttribute("Should Log", shouldLog ? "True" : "False");
     	_logger.log(new Message((shouldLog ? "Enabled" : "Disabled")+" Logging",Message.Type.Report));
     }
+    
+    
 
     public void sendFileActionPerformed(java.awt.event.ActionEvent evt){
     	
+    	fileChooser = new JFileChooser();
+		int returnVal = fileChooser.showDialog(this, "Choose");
+		if(returnVal == JFileChooser.APPROVE_OPTION){
+			_logger.log(new Message("File Choosen : "+fileChooser.getCurrentDirectory().getPath(),Message.Type.Report));
+		  Component c  =jTabbedPane1.getSelectedComponent();
+		  if(c instanceof ChatPanel){
+			  ChatPanel chat = (ChatPanel)c;
+			  chat.sendFile(fileChooser.getCurrentDirectory());
+			  
+		  }
+		}
     }
   
     // Variables declaration - do not modify        
@@ -180,6 +195,8 @@ public class Gui extends JFrame  {
     private javax.swing.JMenuItem setDefaultUsername;
     private javax.swing.JCheckBoxMenuItem shouldLogMenuItem;
     private javax.swing.JMenuItem sendFile;
+    private javax.swing.JFileChooser fileChooser;
+    
     // End of variables declaration                   
 	
 
@@ -200,6 +217,7 @@ public class Gui extends JFrame  {
     		}
     	
     	public void removeChat(ChatPanel c){
+    		
     	
     	}
     

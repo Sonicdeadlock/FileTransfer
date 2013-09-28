@@ -5,6 +5,9 @@ package network;
 import java.io.BufferedReader;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,7 +44,7 @@ public class Client {
 	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
 	        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
-	public static final int SOCKET=1238,PACKET_LENGTH=1000;
+	public static final int SOCKET=1238,PACKET_LENGTH=1000, BUFFER_LENGTH= 1000000;
 	private InputStream in;
 	private volatile DataOutputStream out;
 	private volatile Socket socket;
@@ -51,6 +54,7 @@ public class Client {
 	private int timeout    = 10000;
 	private int maxTimeout = 25000;
 	private Logger _logger;
+	private File file;
 
 	
 	public Client(Logger logger){
@@ -193,7 +197,7 @@ public class Client {
 	}
 	
 	public void close(){
-		byte[] buffer = new byte[PACKET_LENGTH];
+		byte buffer[] = new byte[PACKET_LENGTH];
 		buffer[0]= 9;
 		sendPacket(buffer);
 		_logger.log(new Message("said good-bye", Message.Type.Report));
@@ -208,6 +212,37 @@ public class Client {
 		}
 	}
 	
+	public void sendFile(File f){
+		file =f;
+		String s=f.getName();
+		byte[] stringInBytes=s.getBytes();
+		byte[] buffer= new byte[PACKET_LENGTH];
+		buffer[0]=3;
+		System.arraycopy(stringInBytes, 0, buffer, 1, stringInBytes.length);
+		sendPacket(buffer);
+		
+	}
+	
+	private void sendFile(){
+		try {
+			FileReader fr = new FileReader(file);
+			long numBytes = file.length();
+			char[] buffer;
+			for(int i=0;i<=numBytes/BUFFER_LENGTH;i++){
+				if(numBytes > (i+1)*BUFFER_LENGTH)
+				buffer = new char[BUFFER_LENGTH];
+				else{
+					buffer = new char[(int) (numBytes-(BUFFER_LENGTH*i))];
+				}
+				fr.read(buffer);
+				
+			}
+		} catch (FileNotFoundException e) {
+			_logger.log(new Message("When getting file to send in \"Client\"", Message.Type.Error, e));
+		} catch (IOException e) {
+			_logger.log(new Message("When reading file to send in \"Client\"", Message.Type.Error, e));
+		}
+	}
 	
 	class CommunicationHandler extends Thread{
 		public boolean connected=true;
@@ -221,6 +256,15 @@ public class Client {
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
 						fireMessageRecivedEvent(temp.trim());
 					
+					}
+					else if(buffer[0]==3){
+						//TODO: prompt user for if they want the file or not
+					}
+					else if(buffer[0]==4){
+						sendFile();
+					}
+					else if(buffer[0]==5){
+						fireMessageRecivedEvent("They denied your file ;( cry cry");
 					}
 					else if(buffer[0]==6){
 						System.out.println("trying to set the username");
