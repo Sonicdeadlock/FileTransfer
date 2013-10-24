@@ -46,5 +46,15 @@ public class DataBuffer {
 		return null;
 	}
 	
+	public void reverse(){
+	ArrayList<byte[]> buffer = new ArrayList<byte[]>();
+	 for(int i=packets.size()-1;i>=0;i--){
+		 buffer.add(packets.get(i));
+	 }
+	 packets.clear();
+	 packets=buffer;
+	 
+	}
+	
 	
 }

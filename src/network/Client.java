@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -212,10 +213,10 @@ public class Client {
 		}
 	}
 	
-	public void sendFile(File f){
+	public void sendFileInfo(File f){ //sends the file size to the other user
 		file =f;
-		String s=f.getName();
-		byte[] stringInBytes=s.getBytes();
+		String s=file.getName();
+		byte[] stringInBytes=s.getBytes();//ToDo: change from sending string to file size
 		byte[] buffer= new byte[PACKET_LENGTH];
 		buffer[0]=3;
 		System.arraycopy(stringInBytes, 0, buffer, 1, stringInBytes.length);
@@ -257,8 +258,18 @@ public class Client {
 						fireMessageRecivedEvent(temp.trim());
 					
 					}
+					else if(buffer[0]==2){
+						ByteBuffer wrapped = ByteBuffer.wrap(buffer, 1, PACKET_LENGTH-1);
+						int numPackets=wrapped.getInt();
+						DataBuffer db = new DataBuffer(_logger);
+						FileBuffer fb = new FileBuffer(db,_logger);
+						for(int i=0;i<numPackets;i++){
+							in.read(buffer);
+							db.intakeData(buffer);
+						}
+					}
 					else if(buffer[0]==3){
-						//TODO: prompt user for if they want the file or not
+						//TODO: prompt user for if they want the file or not and then reply
 					}
 					else if(buffer[0]==4){
 						sendFile();
