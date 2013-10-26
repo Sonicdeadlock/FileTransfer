@@ -10,6 +10,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.text.DefaultCaret;
@@ -18,11 +19,12 @@ import config.Configurations;
 import logging.Logger;
 import logging.Message;
 import events.EventListener;
+import events.PromptFileAcceptListener;
 import gui.inputs.DefaultUsernameInput;
 import network.Client;
 
 @SuppressWarnings("serial")
-public class Gui extends JFrame  {
+public class Gui extends JFrame implements PromptFileAcceptListener {
 	/**
 	 * 
 	 */
@@ -152,6 +154,7 @@ public class Gui extends JFrame  {
     public void addChat(Client c){
     	ChatPanel chatPanel = new ChatPanel(c,this);
     	jTabbedPane1.add(chatPanel, jTabbedPane1.getTabCount());
+    	c.addPromptFileAcceptEventListener(this);
     }
     
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
@@ -220,5 +223,11 @@ public class Gui extends JFrame  {
     		
     	
     	}
+
+		@Override
+		public void handlePromptFileAcceptEvent(EventObject e) {
+			int n = JOptionPane.showConfirmDialog(this, e.getSource());
+			
+		}
     
 }

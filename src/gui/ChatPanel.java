@@ -130,7 +130,7 @@ public class ChatPanel extends javax.swing.JPanel implements EventListener, Clos
 	}
 	
 	public void sendFile(File f){
-		client.sendFile(f);
+		client.sendFileInfo(f);
 	}
 }
 

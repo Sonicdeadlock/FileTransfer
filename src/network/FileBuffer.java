@@ -28,7 +28,7 @@ public class FileBuffer {
 	if(firstPacket[0]==1)
 		loc+=new String(firstPacket,1,firstPacket.length-1);
 	else
-		loc+="NONAME.unkownFile”;
+		loc+="NONAME.unkownFile";
 	try {
 		BufferedWriter bw = new BufferedWriter(new FileWriter(loc,true));
 		while(_db.hasPacket()){

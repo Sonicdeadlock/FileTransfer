@@ -20,10 +20,15 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import logging.Logger;
 import logging.Message;
 import events.EventListener;
 import events.MessageRecivedEvent;
+import events.PromptFileAcceptEvent;
+import events.PromptFileAcceptListener;
 import events.UsernameRecivedEvent;
 
 public class Client {
@@ -51,7 +56,7 @@ public class Client {
 	private volatile Socket socket;
 	private CommunicationHandler communicationHandler;
 	private String username="";
-	private List _messageListeners = new ArrayList(),_usernameListeners=new ArrayList();
+	private List _messageListeners = new ArrayList(),_usernameListeners=new ArrayList(),_promptFileAccpetListeners= new ArrayList();
 	private int timeout    = 10000;
 	private int maxTimeout = 25000;
 	private Logger _logger;
@@ -178,6 +183,13 @@ public class Client {
 			((EventListener) i.next()).handleUsernameRecivedEvent(event);
 	}
 	
+	private synchronized void firePromptFileAcceptEvent(String s){
+		PromptFileAcceptEvent event = new PromptFileAcceptEvent(s);
+		Iterator i = _promptFileAccpetListeners.iterator();
+		while(i.hasNext())
+			((PromptFileAcceptListener)i.next()).handlePromptFileAcceptEvent(event);
+	}
+	
 	private void sendConnected(){
 		byte[] buffer = new byte[PACKET_LENGTH];
 		buffer[0]=8;
@@ -195,6 +207,12 @@ public class Client {
 	}
 	public synchronized void removeUsernameEventListener(EventListener e){
 		_usernameListeners.remove(e);
+	}
+	public synchronized void addPromptFileAcceptEventListener(PromptFileAcceptListener e){
+		_promptFileAccpetListeners.add(e);
+	}
+	public synchronized void removePromptFileAcceptEventListener(PromptFileAcceptListener e){
+		_promptFileAccpetListeners.remove(e);
 	}
 	
 	public void close(){
@@ -215,7 +233,7 @@ public class Client {
 	
 	public void sendFileInfo(File f){ //sends the file size to the other user
 		file =f;
-		String s=file.getName();
+		String s=username+"|"+file.getName()+"|"+file.length();
 		byte[] stringInBytes=s.getBytes();//ToDo: change from sending string to file size
 		byte[] buffer= new byte[PACKET_LENGTH];
 		buffer[0]=3;
@@ -245,6 +263,8 @@ public class Client {
 		}
 	}
 	
+	
+	
 	class CommunicationHandler extends Thread{
 		public boolean connected=true;
 		public void run(){
@@ -252,7 +272,8 @@ public class Client {
 			while(connected){
 				try {
 					in.read(buffer);
-					System.out.println("got a packet "+buffer[0]);
+					//System.out.println("got a packet "+buffer[0]);
+					_logger.log(new Message("got packet"+buffer[0],Message.Type.Report));
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
 						fireMessageRecivedEvent(temp.trim());
@@ -270,6 +291,11 @@ public class Client {
 					}
 					else if(buffer[0]==3){
 						//TODO: prompt user for if they want the file or not and then reply
+						String message = new String(buffer,1,PACKET_LENGTH-1);
+						String[] parts = message.split("|");
+						firePromptFileAcceptEvent(parts[0]+"is trying to send you a file - "+parts[1]+" (it is "+parts[2]+" bytes long,i think...)");
+						JOptionPane n =new JOptionPane(parts[0]+"is trying to send you a file - "+parts[1]+" (it is "+parts[2]+" bytes long,i think...)",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_OPTION);
+						
 					}
 					else if(buffer[0]==4){
 						sendFile();
