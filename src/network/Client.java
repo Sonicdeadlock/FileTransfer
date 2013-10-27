@@ -90,8 +90,7 @@ public class Client {
 			communicationHandler.start();
 			sendConnected();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_logger.log(new Message(e.getMessage(),Message.Type.Error,e));
 		}
 		
 	}
@@ -184,7 +183,7 @@ public class Client {
 	}
 	
 	private synchronized void firePromptFileAcceptEvent(String s){
-		PromptFileAcceptEvent event = new PromptFileAcceptEvent(s);
+		PromptFileAcceptEvent event = new PromptFileAcceptEvent(s,this);
 		Iterator i = _promptFileAccpetListeners.iterator();
 		while(i.hasNext())
 			((PromptFileAcceptListener)i.next()).handlePromptFileAcceptEvent(event);
@@ -234,7 +233,7 @@ public class Client {
 	public void sendFileInfo(File f){ //sends the file size to the other user
 		file =f;
 		String s=username+"|"+file.getName()+"|"+file.length();
-		byte[] stringInBytes=s.getBytes();//ToDo: change from sending string to file size
+		byte[] stringInBytes=s.getBytes();
 		byte[] buffer= new byte[PACKET_LENGTH];
 		buffer[0]=3;
 		System.arraycopy(stringInBytes, 0, buffer, 1, stringInBytes.length);
@@ -263,6 +262,14 @@ public class Client {
 		}
 	}
 	
+	public void respondAcceptFile(boolean repsonse){
+		byte[] buffer ;
+		if(repsonse)
+			 buffer = new byte[]{4};
+		else 
+			buffer= new byte[]{5};
+		sendPacket(buffer);
+	}
 	
 	
 	class CommunicationHandler extends Thread{
@@ -272,8 +279,7 @@ public class Client {
 			while(connected){
 				try {
 					in.read(buffer);
-					//System.out.println("got a packet "+buffer[0]);
-					_logger.log(new Message("got packet"+buffer[0],Message.Type.Report));
+					_logger.log(new Message("got packet "+buffer[0],Message.Type.Report));
 					if(buffer[0]==1){
 						String temp = new String(buffer,1,PACKET_LENGTH-1);
 						fireMessageRecivedEvent(temp.trim());
@@ -292,9 +298,10 @@ public class Client {
 					else if(buffer[0]==3){
 						//TODO: prompt user for if they want the file or not and then reply
 						String message = new String(buffer,1,PACKET_LENGTH-1);
-						String[] parts = message.split("|");
+						
+						String[] parts = message.split(",");
 						firePromptFileAcceptEvent(parts[0]+"is trying to send you a file - "+parts[1]+" (it is "+parts[2]+" bytes long,i think...)");
-						JOptionPane n =new JOptionPane(parts[0]+"is trying to send you a file - "+parts[1]+" (it is "+parts[2]+" bytes long,i think...)",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_OPTION);
+						JOptionPane n =new JOptionPane(parts[0]+"is trying to send you a file \n "+parts[1].trim()+" (it is "+parts[2]+" bytes long\ni think...)",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_OPTION);
 						
 					}
 					else if(buffer[0]==4){
@@ -322,14 +329,18 @@ public class Client {
 					}
 					else if(buffer[0]==0){
 						fireMessageRecivedEvent("<Message Lost>");
+						_logger.log(new Message("Message Lost",Message.Type.Warning));
 					}
 					
 					else{
-						System.out.println("Got an error with a packet. Dont know what the ID is\nThe unknown ID is:"+buffer[0]);
+						_logger.log(new Message("Got an error with a packet. Dont know what the ID is\nThe unknown ID is:"+buffer[0],Message.Type.Warning));
 						System.out.println("bytes:[");
+						String bytes ="bytes:[ ";
 						for(int i=0; i<buffer.length;i++)
-							System.out.print(buffer[i]+",");
-						System.out.print("]\n");
+							bytes+=buffer[i]+",";
+						bytes+=" ]\n";
+						_logger.log(new Message(bytes,Message.Type.Report));
+						_logger.log(new Message("Text"+new String(buffer,1,PACKET_LENGTH-1),Message.Type.Report));
 						System.out.println("Text"+new String(buffer,1,PACKET_LENGTH-1));
 					}
 							

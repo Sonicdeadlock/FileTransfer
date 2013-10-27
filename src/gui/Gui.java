@@ -19,6 +19,7 @@ import config.Configurations;
 import logging.Logger;
 import logging.Message;
 import events.EventListener;
+import events.PromptFileAcceptEvent;
 import events.PromptFileAcceptListener;
 import gui.inputs.DefaultUsernameInput;
 import network.Client;
@@ -225,8 +226,13 @@ public class Gui extends JFrame implements PromptFileAcceptListener {
     	}
 
 		@Override
-		public void handlePromptFileAcceptEvent(EventObject e) {
+		public void handlePromptFileAcceptEvent(PromptFileAcceptEvent e) {
 			int n = JOptionPane.showConfirmDialog(this, e.getSource());
+			if(n==JOptionPane.YES_OPTION)
+				e.getClient().respondAcceptFile(true);
+			else
+				e.getClient().respondAcceptFile(false);
+			
 			
 		}
     
