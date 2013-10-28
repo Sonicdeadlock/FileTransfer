@@ -232,7 +232,7 @@ public class Client {
 	
 	public void sendFileInfo(File f){ //sends the file size to the other user
 		file =f;
-		String s=username+"|"+file.getName()+"|"+file.length();
+		String s=username+","+file.getName()+","+file.length();
 		byte[] stringInBytes=s.getBytes();
 		byte[] buffer= new byte[PACKET_LENGTH];
 		buffer[0]=3;
@@ -245,20 +245,29 @@ public class Client {
 		try {
 			FileReader fr = new FileReader(file);
 			long numBytes = file.length();
-			char[] buffer;
-			for(int i=0;i<=numBytes/BUFFER_LENGTH;i++){
-				if(numBytes > (i+1)*BUFFER_LENGTH)
-				buffer = new char[BUFFER_LENGTH];
+			char[] cbuf;
+			byte[] buffer = new byte[PACKET_LENGTH];
+			System.arraycopy(ByteBuffer.allocate(4).putInt((int)numBytes/PACKET_LENGTH+1).array(), 0, buffer, 1, 4);
+			buffer[0]=2;
+			sendPacket(buffer);
+			for(int i=0;i<=numBytes/PACKET_LENGTH;i++){
+				if(numBytes > (i+1)*PACKET_LENGTH)
+				cbuf = new char[PACKET_LENGTH];
 				else{
-					buffer = new char[(int) (numBytes-(BUFFER_LENGTH*i))];
+					cbuf = new char[(int) (numBytes-((PACKET_LENGTH)*i))];
 				}
-				fr.read(buffer);
-				
+				fr.read(cbuf);
+				sendPacket(new String(cbuf).getBytes());
+				_logger.log(new Message("send file part "+i+" out of"+ numBytes/PACKET_LENGTH,Message.Type.Report));
+				Thread.sleep(100);
 			}
 		} catch (FileNotFoundException e) {
 			_logger.log(new Message("When getting file to send in \"Client\"", Message.Type.Error, e));
 		} catch (IOException e) {
 			_logger.log(new Message("When reading file to send in \"Client\"", Message.Type.Error, e));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -296,12 +305,11 @@ public class Client {
 						}
 					}
 					else if(buffer[0]==3){
-						//TODO: prompt user for if they want the file or not and then reply
 						String message = new String(buffer,1,PACKET_LENGTH-1);
 						
 						String[] parts = message.split(",");
 						firePromptFileAcceptEvent(parts[0]+"is trying to send you a file - "+parts[1]+" (it is "+parts[2]+" bytes long,i think...)");
-						JOptionPane n =new JOptionPane(parts[0]+"is trying to send you a file \n "+parts[1].trim()+" (it is "+parts[2]+" bytes long\ni think...)",JOptionPane.QUESTION_MESSAGE,JOptionPane.YES_NO_OPTION);
+						
 						
 					}
 					else if(buffer[0]==4){

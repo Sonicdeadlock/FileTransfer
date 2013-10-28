@@ -183,7 +183,7 @@ public class Gui extends JFrame implements PromptFileAcceptListener {
 		  Component c  =jTabbedPane1.getSelectedComponent();
 		  if(c instanceof ChatPanel){
 			  ChatPanel chat = (ChatPanel)c;
-			  chat.sendFile(fileChooser.getCurrentDirectory());
+			  chat.sendFile(fileChooser.getSelectedFile());
 			  
 		  }
 		}
