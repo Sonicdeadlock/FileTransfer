@@ -247,9 +247,10 @@ public class Client {
 			long numBytes = file.length();
 			char[] cbuf;
 			byte[] buffer = new byte[PACKET_LENGTH];
-			System.arraycopy(ByteBuffer.allocate(4).putInt((int)numBytes/PACKET_LENGTH+1).array(), 0, buffer, 1, 4);
+			System.arraycopy(ByteBuffer.allocate(4).putInt((int)numBytes/PACKET_LENGTH+2).array(), 0, buffer, 1, 4);
 			buffer[0]=2;
 			sendPacket(buffer);
+			sendPacket(file.getName().getBytes());
 			for(int i=0;i<=numBytes/PACKET_LENGTH;i++){
 				if(numBytes > (i+1)*PACKET_LENGTH)
 				cbuf = new char[PACKET_LENGTH];
