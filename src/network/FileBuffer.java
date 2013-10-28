@@ -24,24 +24,25 @@ public class FileBuffer {
 	}
 	
 	public void saveFile(String loc){
-	byte[] firstPacket = _db.getTopPacket();
-	if(firstPacket[0]==1)
-		loc+=new String(firstPacket,1,firstPacket.length-1);
-	else
-		loc+="NONAME.unkownFile";
-	try {
-		BufferedWriter bw = new BufferedWriter(new FileWriter(loc,true));
-		while(_db.hasPacket()){
-			byte[] topPacket=_db.getTopPacket();
-			String message = new String(topPacket,1,topPacket.length-1);
-			bw.write(message);
-			bw.flush();
-		}
-		bw.close();
-		
-	} catch (IOException e) {
-		e.printStackTrace();
-	}	
+		_db.reverse();
+		byte[] firstPacket = _db.getTopPacket();
+		if(firstPacket!=null)
+			loc+=new String(firstPacket,1,firstPacket.length-1);
+		else
+			loc+="NONAME.unkownFileType";
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(loc,true));
+			while(_db.hasPacket()){
+				byte[] topPacket=_db.getTopPacket();
+				String message = new String(topPacket);
+				bw.write(message);
+				bw.flush();
+			}
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
 	}
 	
 	public void prepareFile(File f){

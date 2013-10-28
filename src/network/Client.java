@@ -304,6 +304,7 @@ public class Client {
 							in.read(buffer);
 							db.intakeData(buffer);
 						}
+						fb.saveFile("c:/");
 					}
 					else if(buffer[0]==3){
 						String message = new String(buffer,1,PACKET_LENGTH-1);
