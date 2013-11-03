@@ -9,10 +9,14 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import logging.Logger;
+import logging.Message;
+
 public class Configurations {
 	private static boolean loaded=false;
 	private static Map<String,String> configs = new HashMap<String,String>();
 	private static String[] defaults={"Username:Default User1","Should Log:True"};
+	private static Logger _logger;
 	
 	private static void load(){
 		try{
@@ -40,18 +44,14 @@ public class Configurations {
 		}
 	}
 	
-	public static void initFile(File f){
-		try {
+	public static void initFile(File f) throws IOException{
+		
 			BufferedWriter bw = new BufferedWriter(new FileWriter(f));
 			for(String s : defaults)
 				bw.write(s+"\r\n");
 			bw.flush();
 			bw.close();
 			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 	}
 	
@@ -80,11 +80,14 @@ public class Configurations {
 			bw.close();
 			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			_logger.log(new Message("The congfig save fucked up",Message.Type.Error,e));
 		}
 	}
 	
+	
+	public static void setLogger(Logger logger){
+		_logger=logger;
+	}
 
 
 }

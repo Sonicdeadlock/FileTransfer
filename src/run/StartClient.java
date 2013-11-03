@@ -3,6 +3,7 @@ package run;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import config.Configurations;
 import logging.Logger;
 import network.ConnectionListener;
 import gui.Gui;
@@ -27,6 +28,7 @@ public class StartClient {
             e.printStackTrace();
         }
 		Logger logger = new Logger();
+		Configurations.setLogger(logger);
 		Gui g = new Gui(logger);
 		g.setVisible(true);
 		ConnectionListener cl = new ConnectionListener(logger);
