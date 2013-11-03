@@ -42,6 +42,7 @@ public class FileBuffer {
 			
 		} catch (IOException e) {
 			e.printStackTrace();
+			_logger.log(new Message("\"FileBuffer.saveFile\" Failed to save File",Message.Type.Error,e));
 		}	
 	}
 	

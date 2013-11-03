@@ -360,9 +360,11 @@ public class Client {
 				} catch (Exception e) {
 					
 					System.out.println("Disconnected :P");
+					_logger.log(new Message("Exception in Communucation handler",Message.Type.Error,e));
 					return;
 				}
 			}
+			_logger.log(new Message("Disconnected",Message.Type.Warning));
 		}
 		
 		
